@@ -15,7 +15,7 @@ export default function App() {
 
   const filteredTransactions = transactions.filter(transaction =>
     transaction.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    transaction.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    transaction.category?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -29,8 +29,10 @@ export default function App() {
         </div>
       </header>
       <div className="container">
-        <TransactionSummary transactions={filteredTransactions} />
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', marginTop: '2rem' }}>
+        <div style={{ marginBottom: '2rem' }}>
+          <TransactionSummary transactions={filteredTransactions} />
+        </div>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
           <div style={{ flex: 1 }}>
             <TransactionTable transactions={filteredTransactions} />
           </div>

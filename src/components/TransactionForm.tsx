@@ -1,62 +1,123 @@
+import React from 'react';
 import { useState } from 'react';
-import { TransactionFormData } from '../types/transaction';
+import Select from 'react-select';
 
 interface TransactionFormProps {
-  onAddTransaction: (transaction: Omit<TransactionFormData, 'type'> & { amount: number, date: Date }) => void;
+  onAddTransaction: (transaction: {
+    title: string;
+    category: string;
+    amount: number;
+    date: Date;
+    type: 'income' | 'expense';
+  }) => void;
 }
 
+const inputStyle = {
+  height: '2rem',
+  fontSize: '1rem',
+  padding: '0.25rem 0.8rem',
+  width: '100%',
+  boxSizing: 'border-box' as const,
+};
+
+const categoryOptions = [
+  { value: 'Groceries', label: '🛒 Groceries' },
+  { value: 'Electricity', label: '💡 Electricity' },
+  { value: 'Furniture', label: '🛋️ Furniture' },
+  { value: 'Garden', label: '🌳 Garden' },
+  { value: 'Clothes', label: '👕 Clothes' },
+  { value: 'Transport', label: '🚗 Transport' },
+  { value: 'Health', label: '🏥 Health' },
+  { value: 'Dining', label: '🍽️ Dining' },
+  { value: 'Entertainment', label: '🎬 Entertainment' },
+  { value: 'Other', label: '📦 Other' },
+];
+
+type CategoryOption = { value: string; label: string };
+
 function TransactionForm({ onAddTransaction }: TransactionFormProps) {
-  const [formData, setFormData] = useState<TransactionFormData>({
+  const [formData, setFormData] = useState<{
+    title: string;
+    category: string;
+    amount: string;
+    type: 'income' | 'expense';
+    date: string;
+  }>({
     title: '',
-    description: '',
+    category: '',
     amount: '',
     type: 'expense',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (name === 'amount') {
+      // Only allow numbers and comma, max two decimals after comma
+      const formatted = value.replace(/[^0-9,]/g, '');
+      // Only one comma
+      const parts = formatted.split(',');
+      let valid = parts[0];
+      if (parts.length > 1) {
+        valid += ',' + parts[1].slice(0, 2);
+      }
+      setFormData((prev) => ({ ...prev, [name]: valid }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleCategoryChange = (selected: CategoryOption | null) => {
+    setFormData((prev) => ({ ...prev, category: selected ? selected.value : '' }));
+  };
+
+  const handleTypeChange = (selected: { value: 'income' | 'expense'; label: string } | null) => {
+    setFormData((prev) => ({ ...prev, type: selected ? selected.value : prev.type }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const { title, category, amount, date, type } = formData;
+    // Validate: must be number, optional dot, max two decimals
+    if (!/^\d+(\.\d{1,2})?$/.test(amount.replace(',', '.'))) {
+      alert('Amount must be a number with up to two decimals, separated by a dot.');
+      return;
+    }
+    // Convert to float (replace comma with dot)
+    const parsedAmount = parseFloat(amount.replace(',', '.'));
     onAddTransaction({
-      ...formData,
-      amount: formData.type === 'expense' ? -Number(formData.amount) : Number(formData.amount),
-      date: new Date(formData.date)
+      title,
+      category,
+      amount: parsedAmount,
+      date: new Date(date),
+      type,
     });
     setFormData({
       title: '',
-      description: '',
+      category: '',
       amount: '',
       type: 'expense',
-      date: new Date().toISOString().split('T')[0]
+      date: new Date().toISOString().split('T')[0],
     });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="form"
-      aria-label="Add Transaction"
       style={{
-        width: 300,
-        boxSizing: 'border-box',
-        marginLeft: 'auto',
-        marginRight: 0,
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%)',
-        borderRadius: '1.25rem',
-        boxShadow: '0 8px 32px rgba(59,130,246,0.10), 0 1.5px 6px rgba(0,0,0,0.08)',
-        padding: '1.2rem 1.5rem',
-        position: 'relative',
-        top: 0,
-        right: 0,
-        overflow: 'hidden',
-        border: '1px solid #e5e7eb'
+        border: '1px solid #e5e7eb',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.5rem',
+        padding: '1.2rem',
+        borderRadius: '1.1rem',
+        background: '#f7fafd',
+        boxShadow: '0 2px 12px rgba(59,130,246,0.07)',
+        minWidth: 320,
+        maxWidth: 370,
       }}
     >
-      <div className="form-group" style={{ marginBottom: '0.7rem' }}>
+      <div className="form-group" style={{ marginBottom: 0 }}>
         <label className="form-label" htmlFor="title" style={{ marginBottom: '0.25rem', fontWeight: 600, color: '#374151', fontSize: '1.05rem' }}>Title</label>
         <input
           className="form-input"
@@ -67,52 +128,135 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
           onChange={handleChange}
           required
           autoComplete="off"
-          style={{ height: '2.2rem', fontSize: '1rem', padding: '0.35rem 0.8rem 0.35rem 0.8rem', width: '100%', boxSizing: 'border-box', borderRadius: '0.7rem', border: '1.5px solid #e5e7eb', background: '#fff', boxShadow: '0 1px 4px rgba(59,130,246,0.04)', marginRight: 0 }}
+          style={inputStyle}
         />
       </div>
-      <div className="form-group" style={{ marginBottom: '0.7rem' }}>
-        <label className="form-label" htmlFor="description" style={{ marginBottom: '0.25rem', fontWeight: 600, color: '#374151', fontSize: '1.05rem' }}>Description</label>
-        <textarea
-          className="form-textarea"
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows={1}
-          style={{ minHeight: '2.2rem', fontSize: '1rem', padding: '0.35rem 0.8rem 0.35rem 0.8rem', width: '100%', boxSizing: 'border-box', borderRadius: '0.7rem', border: '1.5px solid #e5e7eb', background: '#fff', boxShadow: '0 1px 4px rgba(59,130,246,0.04)', marginRight: 0 }}
+      <div className="form-group" style={{ marginBottom: 0 }}>
+        <label className="form-label" htmlFor="category" style={{ marginBottom: '0.25rem', fontWeight: 600, color: '#374151', fontSize: '1.05rem' }}>Category</label>
+        <Select
+          id="category"
+          name="category"
+          options={categoryOptions}
+          value={categoryOptions.find((opt) => opt.value === formData.category) || null}
+          onChange={handleCategoryChange}
+          placeholder="Select category"
+          isClearable
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              minHeight: '48px',
+              borderRadius: '0.5rem',
+              borderColor: '#e5e7eb',
+              boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
+              fontSize: '1rem',
+              color: 'var(--text-dark)',
+              backgroundColor: 'white',
+              paddingLeft: '0.5rem',
+            }),
+            option: (provided, state) => ({
+              ...provided,
+              fontSize: '1rem',
+              color: state.isSelected ? '#2563eb' : '#374151',
+              backgroundColor: state.isSelected ? '#f3f4f6' : 'white',
+              padding: '0.75rem 1rem',
+              cursor: 'pointer',
+            }),
+            singleValue: (provided) => ({
+              ...provided,
+              fontSize: '1rem',
+              color: '#374151',
+            }),
+            placeholder: (provided) => ({
+              ...provided,
+              color: '#6b7280',
+              fontSize: '1rem',
+            }),
+            menu: (provided) => ({
+              ...provided,
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.10)',
+              backgroundColor: 'white',
+              zIndex: 20,
+            }),
+          }}
         />
       </div>
-      <div className="form-group" style={{ marginBottom: '0.7rem' }}>
+      <div className="form-group" style={{ marginBottom: 0, position: 'relative' }}>
         <label className="form-label" htmlFor="amount" style={{ marginBottom: '0.25rem', fontWeight: 600, color: '#374151', fontSize: '1.05rem' }}>Amount</label>
+        <span style={{
+          position: 'absolute',
+          left: 12,
+          top: 32,
+          fontSize: '1.1rem',
+          color: '#374151',
+          zIndex: 2,
+        }}>€</span>
         <input
           className="form-input"
           id="amount"
-          type="number"
+          type="text"
           name="amount"
-          step="0.01"
-          min="0.01"
           inputMode="decimal"
           value={formData.amount}
           onChange={handleChange}
           required
-          style={{ height: '2.2rem', fontSize: '1rem', padding: '0.35rem 0.8rem 0.35rem 0.8rem', width: '100%', boxSizing: 'border-box', borderRadius: '0.7rem', border: '1.5px solid #e5e7eb', background: '#fff', boxShadow: '0 1px 4px rgba(59,130,246,0.04)', marginRight: 0 }}
+          style={{ ...inputStyle, paddingLeft: '2rem' }}
+          placeholder="e.g. 123,45"
         />
       </div>
-      <div className="form-group" style={{ marginBottom: '0.7rem' }}>
+      <div className="form-group" style={{ marginBottom: 0 }}>
         <label className="form-label" htmlFor="type" style={{ marginBottom: '0.25rem', fontWeight: 600, color: '#374151', fontSize: '1.05rem' }}>Type</label>
-        <select
-          className="form-select"
+        <Select
           id="type"
           name="type"
-          value={formData.type}
-          onChange={handleChange}
-          style={{ height: '2.2rem', fontSize: '1rem', padding: '0.35rem 0.8rem 0.35rem 0.8rem', width: '100%', boxSizing: 'border-box', borderRadius: '0.7rem', border: '1.5px solid #e5e7eb', background: '#fff', boxShadow: '0 1px 4px rgba(59,130,246,0.04)', marginRight: 0 }}
-        >
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
+          options={[
+            { value: 'income', label: '💰 Income' },
+            { value: 'expense', label: '💸 Expense' },
+          ]}
+          value={formData.type ? { value: formData.type, label: formData.type === 'income' ? '💰 Income' : '💸 Expense' } : null}
+          onChange={handleTypeChange}
+          placeholder="Select type"
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              minHeight: '48px',
+              borderRadius: '0.5rem',
+              borderColor: '#e5e7eb',
+              boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
+              fontSize: '1rem',
+              color: 'var(--text-dark)',
+              backgroundColor: 'white',
+              paddingLeft: '0.5rem',
+            }),
+            option: (provided, state) => ({
+              ...provided,
+              fontSize: '1rem',
+              color: state.isSelected ? '#2563eb' : '#374151',
+              backgroundColor: state.isSelected ? '#f3f4f6' : 'white',
+              padding: '0.75rem 1rem',
+              cursor: 'pointer',
+            }),
+            singleValue: (provided) => ({
+              ...provided,
+              fontSize: '1rem',
+              color: '#374151',
+            }),
+            placeholder: (provided) => ({
+              ...provided,
+              color: '#6b7280',
+              fontSize: '1rem',
+            }),
+            menu: (provided) => ({
+              ...provided,
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.10)',
+              backgroundColor: 'white',
+              zIndex: 20,
+            }),
+          }}
+        />
       </div>
-      <div className="form-group" style={{ marginBottom: '1.1rem' }}>
+      <div className="form-group" style={{ marginBottom: 0 }}>
         <label className="form-label" htmlFor="date" style={{ marginBottom: '0.25rem', fontWeight: 600, color: '#374151', fontSize: '1.05rem' }}>Date</label>
         <input
           className="form-input"
@@ -122,7 +266,7 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
           value={formData.date}
           onChange={handleChange}
           required
-          style={{ height: '2.2rem', fontSize: '1rem', padding: '0.35rem 0.8rem 0.35rem 0.8rem', width: '100%', boxSizing: 'border-box', borderRadius: '0.7rem', border: '1.5px solid #e5e7eb', background: '#fff', boxShadow: '0 1px 4px rgba(59,130,246,0.04)', marginRight: 0 }}
+          style={inputStyle}
         />
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.5rem' }}>

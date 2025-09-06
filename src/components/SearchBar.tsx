@@ -3,11 +3,18 @@ interface SearchBarProps {
 }
 
 function SearchBar({ onSearch }: SearchBarProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length >= 3 || value.length === 0) {
+      onSearch(value);
+    }
+  };
+
   return (
     <input
       type="text"
       placeholder="Search transactions..."
-      onChange={(e) => onSearch(e.target.value)}
+      onChange={handleChange}
       className="search-input"
     />
   );

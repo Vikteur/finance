@@ -16,19 +16,19 @@ function TransactionSummary({ transactions }: TransactionSummaryProps) {
   const balance = totalIncome - totalExpenses;
 
   return (
-    <div className="grid grid-cols-3 mb-6">
+    <div className="grid grid-cols-3">
       <div className="card card-success">
         <h3 className="text-lg font-semibold mb-2">Total Income</h3>
-        <p className="text-2xl font-bold">${totalIncome.toFixed(2)}</p>
+  <p className="text-2xl font-bold">€{totalIncome.toFixed(2)}</p>
       </div>
       <div className="card card-danger">
         <h3 className="text-lg font-semibold mb-2">Total Expenses</h3>
-        <p className="text-2xl font-bold">${totalExpenses.toFixed(2)}</p>
+  <p className="text-2xl font-bold">€{totalExpenses.toFixed(2)}</p>
       </div>
       <div className={`card ${balance >= 0 ? 'card-success' : 'card-warning'}`}>
         <h3 className="text-lg font-semibold mb-2">Balance</h3>
         <p className="text-2xl font-bold">
-          ${balance.toFixed(2)}
+          €{balance.toFixed(2)}
         </p>
       </div>
     </div>

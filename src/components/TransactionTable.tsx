@@ -12,7 +12,7 @@ type SortConfig = {
 
 type Filters = {
   title: string;
-  description: string;
+  category: string;
   amount: {
     min: string;
     max: string;
@@ -27,7 +27,7 @@ function TransactionTable({ transactions }: TransactionTableProps) {
 
   const [filters, setFilters] = useState<Filters>({
     title: '',
-    description: '',
+    category: '',
     amount: {
       min: '',
       max: ''
@@ -37,12 +37,12 @@ function TransactionTable({ transactions }: TransactionTableProps) {
   const filteredAndSortedTransactions = [...transactions]
     .filter(transaction => {
       const matchesTitle = transaction.title.toLowerCase().includes(filters.title.toLowerCase());
-      const matchesDescription = transaction.description?.toLowerCase().includes(filters.description.toLowerCase()) ?? true;
+      const matchesCategory = transaction.category?.toLowerCase().includes(filters.category.toLowerCase()) ?? true;
       const matchesAmount = (
         (!filters.amount.min || transaction.amount >= Number(filters.amount.min)) &&
         (!filters.amount.max || transaction.amount <= Number(filters.amount.max))
       );
-      return matchesTitle && matchesDescription && matchesAmount;
+      return matchesTitle && matchesCategory && matchesAmount;
     })
     .sort((a, b) => {
       if (sortConfig.key === 'date') {
@@ -89,9 +89,9 @@ function TransactionTable({ transactions }: TransactionTableProps) {
                 <span>{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
               )}
             </th>
-            <th onClick={() => requestSort('description')}>
-              <span>Description</span>
-              {sortConfig.key === 'description' && (
+            <th onClick={() => requestSort('category')}>
+              <span>Category</span>
+              {sortConfig.key === 'category' && (
                 <span>{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
               )}
             </th>
@@ -128,14 +128,14 @@ function TransactionTable({ transactions }: TransactionTableProps) {
                 <input
                   type="text"
                   className="filter-input"
-                  placeholder="Filter by description..."
-                  value={filters.description}
-                  onChange={(e) => setFilters(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Filter by category..."
+                  value={filters.category}
+                  onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
                 />
-                {filters.description && (
+                {filters.category && (
                   <span 
                     className="clear-filter"
-                    onClick={() => setFilters(prev => ({ ...prev, description: '' }))}
+                    onClick={() => setFilters(prev => ({ ...prev, category: '' }))}
                   >
                     ×
                   </span>
@@ -177,10 +177,10 @@ function TransactionTable({ transactions }: TransactionTableProps) {
                 })}
               </td>
               <td>{transaction.title}</td>
-              <td>{transaction.description}</td>
+              <td>{transaction.category}</td>
               <td className="amount-cell">
                 <span className={`amount ${transaction.amount < 0 ? 'expense' : 'income'}`}>
-                  ${Math.abs(transaction.amount).toLocaleString('en-US', {
+                  €{Math.abs(transaction.amount).toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                   })}
