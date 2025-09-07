@@ -1,0 +1,65 @@
+/* TableRow Component Styles */
+
+/* Table row */
+.table-row {
+  @apply hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200;
+}
+
+.table-row:last-child {
+  @apply border-b-0;
+}
+
+/* Table cells */
+.table-cell {
+  @apply px-6 py-4 text-sm text-gray-900;
+}
+
+/* Transaction data cells */
+.table-cell-date {
+  @apply font-medium text-gray-900;
+}
+
+.table-cell-title {
+  @apply font-medium text-gray-900;
+}
+
+.table-cell-category {
+  @apply text-gray-600;
+}
+
+.table-cell-amount {
+  @apply font-semibold;
+}
+
+.table-cell-amount-income {
+  @apply text-green-600;
+}
+
+.table-cell-amount-expense {
+  @apply text-red-600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .table-cell {
+    @apply px-4 py-3 text-xs;
+  }
+
+  .table-cell-title {
+    @apply truncate max-w-32;
+  }
+
+  .table-cell-category {
+    @apply truncate max-w-24;
+  }
+}
+
+/* Hover effects */
+.table-row:hover .table-cell {
+  @apply bg-gray-50;
+}
+
+/* Focus states for accessibility */
+.table-row:focus-within {
+  @apply bg-blue-50 outline-none ring-2 ring-blue-500 ring-inset;
+}

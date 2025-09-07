@@ -1,0 +1,45 @@
+/* TableHeader Component Styles */
+
+/* Table header row */
+.table-header-row {
+  @apply bg-gray-50 border-b border-gray-200;
+}
+
+/* Header cells */
+.table-header-cell {
+  @apply px-6 py-4 text-left text-sm font-semibold text-gray-900 uppercase tracking-wider;
+}
+
+/* Sortable header */
+.table-header-sortable {
+  @apply cursor-pointer hover:bg-gray-100 transition-colors duration-200 select-none;
+}
+
+.table-header-sortable:hover {
+  @apply bg-gray-100;
+}
+
+/* Sort indicators */
+.table-header-sort-indicator {
+  @apply inline-flex items-center ml-2;
+}
+
+.table-header-sort-asc {
+  @apply text-blue-600;
+}
+
+.table-header-sort-desc {
+  @apply text-blue-600;
+}
+
+/* Filter button in header */
+.table-header-filter {
+  @apply flex items-center justify-center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .table-header-cell {
+    @apply px-4 py-3 text-xs;
+  }
+}

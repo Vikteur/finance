@@ -5,6 +5,7 @@ export type Transaction = {
   category?: string;
   amount: number;
   date: Date;
+  type: 'income' | 'expense';
 };
 
 

@@ -1,0 +1,59 @@
+/* EmptyState Component Styles */
+
+/* Empty state container */
+.empty-state-container {
+  @apply text-center py-16 px-8;
+}
+
+/* Content wrapper */
+.empty-state-content {
+  @apply flex flex-col items-center gap-6 text-gray-500;
+}
+
+/* Icon container */
+.empty-state-icon {
+  @apply relative;
+}
+
+.empty-state-icon-circle {
+  @apply w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center;
+}
+
+.empty-state-icon-main {
+  @apply w-8 h-8 text-gray-400;
+}
+
+/* Filter indicator badge */
+.empty-state-filter-badge {
+  @apply absolute -top-1 -right-1 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center;
+}
+
+.empty-state-filter-icon {
+  @apply w-3 h-3 text-white;
+}
+
+/* Text content */
+.empty-state-text-content {
+  @apply text-center max-w-md;
+}
+
+.empty-state-title {
+  @apply text-xl font-semibold mb-2 text-gray-700;
+}
+
+.empty-state-description {
+  @apply text-sm opacity-80 leading-relaxed;
+}
+
+/* Action buttons */
+.empty-state-actions {
+  @apply flex flex-col items-center gap-4 mt-4;
+}
+
+.empty-state-button {
+  @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200;
+}
+
+.empty-state-button-icon {
+  @apply w-4 h-4;
+}
