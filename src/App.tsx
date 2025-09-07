@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { Container, Box, Typography, AppBar, Toolbar, Button, Fab, Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
+import { Add as AddIcon, Close as CloseIcon, Login as LoginIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import TransactionForm from './components/TransactionForm/TransactionForm';
 import TransactionTable from './components/TransactionTable/TransactionTable';
 import TransactionSummary from './components/TransactionSummary/TransactionSummary';
 import SearchBar from './components/SearchBar/SearchBar';
 import { Transaction } from './types/transaction';
 import { useTransactions } from './hooks/useTransactions';
+import theme from './theme';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,71 +48,98 @@ export default function App() {
   }, [isModalOpen]);
 
   return (
-    <>
-      <header className="header">
-        <div className="header-content">
-          <h1 className="header-title">Finance Tracker</h1>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
+            Finance Tracker
+          </Typography>
           
-          <div className="header-center">
-            <div className="search-container">
-              <SearchBar onSearch={setSearchQuery} />
-            </div>
-          </div>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+            <SearchBar onSearch={setSearchQuery} />
+          </Box>
 
-          <div className="header-right">
-            <button
-              onClick={() => setIsLoggedIn(!isLoggedIn)}
-              className="px-6 py-3 text-base font-semibold rounded-full bg-white/20 backdrop-blur-md text-white border-2 border-white/30 cursor-pointer shadow-lg transition-all duration-300 whitespace-nowrap hover:bg-white/30 hover:border-white/50 hover:-translate-y-1 hover:shadow-2xl"
-            >
-              {isLoggedIn ? '🚪 Logout' : '🔐 Login'}
-            </button>
-          </div>
-        </div>
-      </header>
-      <div className="container fade-in-container">
-        <div className="mb-8 fade-in-summary">
+          <Button
+            variant="contained"
+            onClick={() => setIsLoggedIn(!isLoggedIn)}
+            startIcon={isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+            sx={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+                transform: 'translateY(-2px)',
+              }
+            }}
+          >
+            {isLoggedIn ? 'Logout' : 'Login'}
+          </Button>
+        </Toolbar>
+      </AppBar>
+      
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 4 }}>
           <TransactionSummary transactions={filteredTransactions} />
-        </div>
+        </Box>
 
-        <div className="responsive-layout fade-in-table flex gap-8 items-start">
-          <div className="table-container">
+        <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
+          <Box sx={{ flexGrow: 1 }}>
             <TransactionTable 
               transactions={filteredTransactions} 
               onOpenAddModal={() => setIsModalOpen(true)}
             />
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         {/* Floating Action Button */}
-        <button
+        <Fab
+          color="primary"
           onClick={() => setIsModalOpen(true)}
-          className="fab-button fade-in-fab"
-          title="Add Transaction"
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              transform: 'scale(1.1)',
+            }
+          }}
         >
-          +
-        </button>
+          <AddIcon />
+        </Fab>
 
         {/* Modal */}
-        {isModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h2>Add New Transaction</h2>
-                <button
-                  className="modal-close"
-                  onClick={() => setIsModalOpen(false)}
-                  aria-label="Close modal"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="modal-body">
-                <TransactionForm onAddTransaction={handleAddTransaction} />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+        <Dialog 
+          open={isModalOpen} 
+          onClose={() => setIsModalOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white'
+          }}>
+            Add New Transaction
+            <IconButton
+              onClick={() => setIsModalOpen(false)}
+              sx={{ color: 'white' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent sx={{ pt: 3 }}>
+            <TransactionForm onAddTransaction={handleAddTransaction} />
+          </DialogContent>
+        </Dialog>
+      </Container>
+    </ThemeProvider>
   );
 }

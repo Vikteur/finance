@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
-import Select, { StylesConfig } from 'react-select';
+import { 
+  Box, 
+  TextField, 
+  Button, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem, 
+  Typography,
+  InputAdornment,
+  SelectChangeEvent
+} from '@mui/material';
+import { 
+  Euro as EuroIcon,
+  TrendingUp as IncomeIcon,
+  TrendingDown as ExpenseIcon
+} from '@mui/icons-material';
 
 interface TransactionFormProps {
   onAddTransaction: (transaction: {
@@ -23,92 +39,6 @@ const categoryOptions = [
   { value: 'Entertainment', label: '🎬 Entertainment' },
   { value: 'Other', label: '📦 Other' },
 ];
-
-const typeOptions = [
-  { value: 'income' as const, label: '💰 Income' },
-  { value: 'expense' as const, label: '💸 Expense' },
-];
-
-type CategoryOption = { value: string; label: string };
-type TypeOption = { value: 'income' | 'expense'; label: string };
-
-const categorySelectStyles: StylesConfig<CategoryOption, false> = {
-  control: (provided) => ({
-    ...provided,
-    minHeight: '48px',
-    borderRadius: '0.5rem',
-    borderColor: '#e5e7eb',
-    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
-    fontSize: '1rem',
-    color: '#374151',
-    backgroundColor: 'white',
-    paddingLeft: '0.5rem',
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    fontSize: '1rem',
-    color: state.isSelected ? '#2563eb' : '#374151',
-    backgroundColor: state.isSelected ? '#f3f4f6' : 'white',
-    padding: '0.75rem 1rem',
-    cursor: 'pointer',
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    fontSize: '1rem',
-    color: '#374151',
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: '#6b7280',
-    fontSize: '1rem',
-  }),
-  menu: (provided) => ({
-    ...provided,
-    borderRadius: '0.5rem',
-    boxShadow: '0 4px 16px rgba(59,130,246,0.10)',
-    backgroundColor: 'white',
-    zIndex: 20,
-  }),
-};
-
-const typeSelectStyles: StylesConfig<TypeOption, false> = {
-  control: (provided) => ({
-    ...provided,
-    minHeight: '48px',
-    borderRadius: '0.5rem',
-    borderColor: '#e5e7eb',
-    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
-    fontSize: '1rem',
-    color: '#374151',
-    backgroundColor: 'white',
-    paddingLeft: '0.5rem',
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    fontSize: '1rem',
-    color: state.isSelected ? '#2563eb' : '#374151',
-    backgroundColor: state.isSelected ? '#f3f4f6' : 'white',
-    padding: '0.75rem 1rem',
-    cursor: 'pointer',
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    fontSize: '1rem',
-    color: '#374151',
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: '#6b7280',
-    fontSize: '1rem',
-  }),
-  menu: (provided) => ({
-    ...provided,
-    borderRadius: '0.5rem',
-    boxShadow: '0 4px 16px rgba(59,130,246,0.10)',
-    backgroundColor: 'white',
-    zIndex: 20,
-  }),
-};
 
 function TransactionForm({ onAddTransaction }: TransactionFormProps) {
   const [formData, setFormData] = useState<{
@@ -144,12 +74,9 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
     }
   };
 
-  const handleCategoryChange = (selected: CategoryOption | null) => {
-    setFormData((prev) => ({ ...prev, category: selected ? selected.value : '' }));
-  };
-
-  const handleTypeChange = (selected: TypeOption | null) => {
-    setFormData((prev) => ({ ...prev, type: selected ? selected.value : prev.type }));
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateAmount = (amount: string): boolean => {
@@ -187,117 +114,110 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4 w-full"
-    >
-      <div className="mb-0">
-        <label
-          htmlFor="title"
-          className="block mb-1 font-semibold text-gray-700 text-lg"
-        >
-          Title
-        </label>
-        <input
-          id="title"
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          autoComplete="off"
-          className="h-8 text-base px-3 py-1 w-full box-border rounded-md border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-        />
-      </div>
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <TextField
+        fullWidth
+        label="Title"
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
+        required
+        variant="outlined"
+      />
 
-      <div className="mb-0">
-        <label
-          htmlFor="category"
-          className="block mb-1 font-semibold text-gray-700 text-lg"
-        >
-          Category
-        </label>
+      <FormControl fullWidth required>
+        <InputLabel>Category</InputLabel>
         <Select
-          id="category"
           name="category"
-          options={categoryOptions}
-          value={categoryOptions.find((opt) => opt.value === formData.category) || null}
-          onChange={handleCategoryChange}
-          placeholder="Select category"
-          isClearable
-          styles={categorySelectStyles}
-        />
-      </div>
-
-      <div className="mb-0 relative">
-        <label
-          htmlFor="amount"
-          className="block mb-1 font-semibold text-gray-700 text-lg"
+          value={formData.category}
+          onChange={handleSelectChange}
+          label="Category"
         >
-          Amount
-        </label>
-        <span className="absolute left-3 top-8 text-lg text-gray-700 z-10">€</span>
-        <input
-          id="amount"
-          type="text"
-          name="amount"
-          inputMode="decimal"
-          value={formData.amount}
-          onChange={handleChange}
-          required
-          className="h-8 text-base pl-8 pr-3 py-1 w-full box-border rounded-md border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-          placeholder="e.g. 123,45"
-        />
-        {amountError && (
-          <p className="text-red-500 text-sm mt-1">{amountError}</p>
-        )}
-      </div>
+          {categoryOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-      <div className="mb-0">
-        <label
-          htmlFor="type"
-          className="block mb-1 font-semibold text-gray-700 text-lg"
-        >
-          Type
-        </label>
+      <TextField
+        fullWidth
+        label="Amount"
+        name="amount"
+        value={formData.amount}
+        onChange={handleChange}
+        required
+        variant="outlined"
+        placeholder="e.g. 123,45"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <EuroIcon />
+            </InputAdornment>
+          ),
+        }}
+        error={!!amountError}
+        helperText={amountError}
+      />
+
+      <FormControl fullWidth required>
+        <InputLabel>Type</InputLabel>
         <Select
-          id="type"
           name="type"
-          options={typeOptions}
-          value={typeOptions.find((opt) => opt.value === formData.type) || null}
-          onChange={handleTypeChange}
-          placeholder="Select type"
-          styles={typeSelectStyles}
-        />
-      </div>
-
-      <div className="mb-0">
-        <label
-          htmlFor="date"
-          className="block mb-1 font-semibold text-gray-700 text-lg"
+          value={formData.type}
+          onChange={handleSelectChange}
+          label="Type"
         >
-          Date
-        </label>
-        <input
-          id="date"
-          type="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          required
-          className="h-8 text-base px-3 py-1 w-full box-border rounded-md border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-        />
-      </div>
+          <MenuItem value="income">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IncomeIcon sx={{ color: 'success.main' }} />
+              <Typography>Income</Typography>
+            </Box>
+          </MenuItem>
+          <MenuItem value="expense">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <ExpenseIcon sx={{ color: 'error.main' }} />
+              <Typography>Expense</Typography>
+            </Box>
+          </MenuItem>
+        </Select>
+      </FormControl>
 
-      <div className="flex justify-center mt-2">
-        <button
-          type="submit"
-          className="w-full text-lg py-3 px-6 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-lg border-none tracking-wide transition-all duration-200 hover:shadow-xl hover:from-blue-600 hover:to-blue-700"
-        >
-          Add Transaction
-        </button>
-      </div>
-    </form>
+      <TextField
+        fullWidth
+        label="Date"
+        name="date"
+        type="date"
+        value={formData.date}
+        onChange={handleChange}
+        required
+        variant="outlined"
+        InputLabelProps={{
+          shrink: true,
+        }}
+      />
+
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        fullWidth
+        sx={{
+          mt: 2,
+          py: 1.5,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          fontSize: '1.1rem',
+          fontWeight: 600,
+          '&:hover': {
+            background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+            transform: 'translateY(-2px)',
+          }
+        }}
+      >
+        Add Transaction
+      </Button>
+    </Box>
   );
 }
 

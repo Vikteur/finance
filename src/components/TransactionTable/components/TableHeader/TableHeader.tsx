@@ -1,6 +1,12 @@
 import React from 'react';
-import { SortConfig, Transaction } from '../../types';
+import { Transaction } from '../../../../types/transaction';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+
+// Define SortConfig interface inline
+interface SortConfig {
+  key: keyof Transaction;
+  direction: 'asc' | 'desc';
+}
 
 interface TableHeaderProps {
   sortConfig: SortConfig;

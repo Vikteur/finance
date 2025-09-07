@@ -1,12 +1,36 @@
 import React from 'react';
-import Select from 'react-select';
-import { Filters, CategoryOption } from '../../types';
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions,
+  Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  IconButton,
+  Typography,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  SelectChangeEvent
+} from '@mui/material';
+import { 
+  Close as CloseIcon,
+  Delete as ClearAllIcon,
+  Check as ApplyIcon,
+  Search as SearchIcon,
+  Category as CategoryIcon,
+  Euro as EuroIcon
+} from '@mui/icons-material';
+import { Filters } from '../../../../hooks/useTransactionFilters';
 import { CATEGORY_OPTIONS } from '../../utils/constants';
-import { Button } from '../../../ui/Button';
-import { Input } from '../../../ui/Input';
-import { Label } from '../../../ui/Label';
-import { Trash2, Check, FileText, Tag, DollarSign, X } from 'lucide-react';
-import './FilterPopup.css';
 
 interface FilterPopupProps {
   isOpen: boolean;
@@ -47,8 +71,8 @@ export function FilterPopup({
     onSelectedTitleIndexChange(-1);
   };
 
-  const handleCategoryChange = (selected: CategoryOption | null) => {
-    onFiltersChange({ ...filters, category: selected ? selected.value : '' });
+  const handleCategoryChange = (event: SelectChangeEvent<string>) => {
+    onFiltersChange({ ...filters, category: event.target.value });
   };
 
   const handleAmountChange = (field: 'min' | 'max', value: string) => {
@@ -88,202 +112,191 @@ export function FilterPopup({
   };
 
   return (
-    <div className="filter-modal-overlay modal-position">
-      <div className="filter-panel filter-panel-width panel-animation">
-        <div className="panel-header">
-          <h2 className="panel-title">Filter Transactions</h2>
-          <button
-            className="modal-close"
-            onClick={onClose}
-            aria-label="Close filter panel"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Dialog 
+      open={isOpen} 
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: { borderRadius: 3 }
+      }}
+    >
+      <DialogTitle 
+        sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <Typography variant="h6" fontWeight={600}>
+          Filter Transactions
+        </Typography>
+        <IconButton
+          onClick={onClose}
+          sx={{ color: 'white' }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-        <div className="form-spacing">
+      <DialogContent sx={{ pt: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Title Filter */}
-          <div className="field-spacing">
-            <Label className="field-label">
-              <FileText className="w-4 h-4" />
-              Title
-            </Label>
-            <div className="input-container">
-              <Input
-                type="text"
-                placeholder="Search by transaction title..."
-                value={filters.title}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTitleChange(e.target.value)}
-                onFocus={() => onShowTitleDropdownChange(true)}
-                onBlur={() => {
-                  setTimeout(() => {
-                    onShowTitleDropdownChange(false);
-                    onSelectedTitleIndexChange(-1);
-                  }, 200);
-                }}
-                onKeyDown={handleKeyDown}
-                autoComplete="off"
-                className="filter-input"
-              />
-              {filters.title && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="clear-button"
-                  onClick={() => handleTitleChange('')}
-                  aria-label="Clear title filter"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              )}
-
-              {/* Autocomplete Dropdown */}
-              {showTitleDropdown && filters.title.length >= 2 && filteredTitles.length > 0 && (
-                <div className="dropdown-menu">
-                  {filteredTitles.map((title, index) => (
-                    <div
-                      key={index}
-                      className={`dropdown-item ${
-                        selectedTitleIndex === index ? 'dropdown-item-selected' : 'dropdown-item-default'
-                      }`}
-                      onClick={() => handleTitleSelect(title)}
+          <Box sx={{ position: 'relative' }}>
+            <TextField
+              fullWidth
+              label="Title"
+              placeholder="Search by transaction title..."
+              value={filters.title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              onFocus={() => onShowTitleDropdownChange(true)}
+              onBlur={() => {
+                setTimeout(() => {
+                  onShowTitleDropdownChange(false);
+                  onSelectedTitleIndexChange(-1);
+                }, 200);
+              }}
+              onKeyDown={handleKeyDown}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: filters.title && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => handleTitleChange('')}
+                      size="small"
                     >
-                      {title}
-                    </div>
+                      <CloseIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {/* Autocomplete Dropdown */}
+            {showTitleDropdown && filters.title.length >= 2 && filteredTitles.length > 0 && (
+              <Paper
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  mt: 0.5,
+                  maxHeight: 200,
+                  overflow: 'auto',
+                  zIndex: 10,
+                  boxShadow: 3
+                }}
+              >
+                <List dense>
+                  {filteredTitles.map((title, index) => (
+                    <ListItem key={index} disablePadding>
+                      <ListItemButton
+                        selected={selectedTitleIndex === index}
+                        onClick={() => handleTitleSelect(title)}
+                      >
+                        <ListItemText primary={title} />
+                      </ListItemButton>
+                    </ListItem>
                   ))}
-                </div>
-              )}
-            </div>
-          </div>
+                </List>
+              </Paper>
+            )}
+          </Box>
 
           {/* Category Filter */}
-          <div className="field-spacing">
-            <Label className="field-label">
-              <Tag className="w-4 h-4" />
-              Category
-            </Label>
-            <div className="filter-select">
-              <Select
-                options={CATEGORY_OPTIONS}
-                value={filters.category ? CATEGORY_OPTIONS.find((opt) => opt.value === filters.category) || null : null}
-                onChange={handleCategoryChange}
-                placeholder="Select a category..."
-                isClearable
-                styles={{
-                  control: (provided, state) => ({
-                    ...provided,
-                    minHeight: '44px',
-                    borderRadius: '0.5rem',
-                    borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
-                    boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.1)' : '0 1px 2px 0 rgba(0,0,0,0.05)',
-                    fontSize: '0.875rem',
-                    backgroundColor: 'white',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      borderColor: '#9ca3af',
-                    },
-                  }),
-                  option: (provided, state) => ({
-                    ...provided,
-                    fontSize: '0.875rem',
-                    color: state.isSelected ? '#1d4ed8' : '#374151',
-                    backgroundColor: state.isSelected ? '#dbeafe' : state.isFocused ? '#f3f4f6' : 'white',
-                    padding: '0.75rem 1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }),
-                  singleValue: (provided) => ({
-                    ...provided,
-                    fontSize: '0.875rem',
-                    color: '#374151',
-                  }),
-                  placeholder: (provided) => ({
-                    ...provided,
-                    color: '#9ca3af',
-                    fontSize: '0.875rem',
-                  }),
-                  menu: (provided) => ({
-                    ...provided,
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-                    backgroundColor: 'white',
-                    zIndex: 1000,
-                    border: '1px solid #e5e7eb',
-                  }),
-                  clearIndicator: (provided) => ({
-                    ...provided,
-                    cursor: 'pointer',
-                    color: '#9ca3af',
-                    '&:hover': {
-                      color: '#374151',
-                    },
-                  }),
-                  dropdownIndicator: (provided) => ({
-                    ...provided,
-                    color: '#9ca3af',
-                    '&:hover': {
-                      color: '#374151',
-                    },
-                  }),
-                }}
-              />
-            </div>
-          </div>
+          <FormControl fullWidth>
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={filters.category}
+              onChange={handleCategoryChange}
+              label="Category"
+              startAdornment={
+                <InputAdornment position="start">
+                  <CategoryIcon />
+                </InputAdornment>
+              }
+            >
+              <MenuItem value="">
+                <em>All Categories</em>
+              </MenuItem>
+              {CATEGORY_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* Amount Range Filter */}
-          <div className="field-spacing">
-            <Label className="field-label">
-              <DollarSign className="w-4 h-4" />
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
               Amount Range
-            </Label>
-            <div className="amount-inputs">
-              <div className="input-field">
-                <Input
-                  type="number"
-                  placeholder="Min amount"
-                  value={filters.amount.min}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAmountChange('min', e.target.value)}
-                  className="filter-input"
-                  step="1"
-                />
-              </div>
-              <div className="amount-separator">
-                to
-              </div>
-              <div className="input-field">
-                <Input
-                  type="number"
-                  placeholder="Max amount"
-                  value={filters.amount.max}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAmountChange('max', e.target.value)}
-                  className="filter-input"
-                  step="1"
-                />
-              </div>
-            </div>
-          </div>
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <TextField
+                label="Min amount"
+                type="number"
+                value={filters.amount.min}
+                onChange={(e) => handleAmountChange('min', e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EuroIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                inputProps={{ step: "1" }}
+              />
+              <Typography sx={{ color: 'text.secondary' }}>to</Typography>
+              <TextField
+                label="Max amount"
+                type="number"
+                value={filters.amount.max}
+                onChange={(e) => handleAmountChange('max', e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EuroIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                inputProps={{ step: "1" }}
+              />
+            </Box>
+          </Box>
+        </Box>
+      </DialogContent>
 
-          {/* Action Buttons */}
-          <div className="action-buttons">
-            <Button
-              variant="outline"
-              onClick={onClearFilters}
-              className="action-button"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Clear All
-            </Button>
-            <Button
-              onClick={onClose}
-              className="action-button"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              Apply Filters
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+      <DialogActions sx={{ p: 3, gap: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={onClearFilters}
+          startIcon={<ClearAllIcon />}
+          sx={{ flex: 1 }}
+        >
+          Clear All
+        </Button>
+        <Button
+          variant="contained"
+          onClick={onClose}
+          startIcon={<ApplyIcon />}
+          sx={{ 
+            flex: 1,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+            }
+          }}
+        >
+          Apply Filters
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

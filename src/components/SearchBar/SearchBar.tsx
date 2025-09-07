@@ -1,5 +1,6 @@
 import React from 'react';
-import './SearchBar.css';
+import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
+import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -28,34 +29,58 @@ function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <div className="search-bar-container">
-      <div className="search-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-      </div>
-      <input
-        type="text"
+    <Box sx={{ width: { xs: '100%', sm: 400 } }}>
+      <TextField
+        fullWidth
+        variant="outlined"
         placeholder="Search transactions..."
         value={searchValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className="search-input"
+        size="small"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 3,
+            '& fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.3)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.5)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.8)',
+            },
+          },
+          '& .MuiInputBase-input': {
+            color: '#1e293b',
+            '&::placeholder': {
+              color: '#64748b',
+            },
+          },
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon sx={{ color: '#64748b' }} />
+            </InputAdornment>
+          ),
+          endAdornment: searchValue && (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={handleClear}
+                size="small"
+                aria-label="Clear search"
+                sx={{ color: '#64748b' }}
+              >
+                <ClearIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
-      {searchValue && (
-        <button
-          onClick={handleClear}
-          className="search-clear"
-          aria-label="Clear search"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      )}
-    </div>
+    </Box>
   );
 }
 

@@ -1,4 +1,8 @@
-import { CategoryOption } from '../types';
+// Define CategoryOption interface inline since it's simple
+interface CategoryOption {
+  value: string;
+  label: string;
+}
 
 export const CATEGORY_OPTIONS: CategoryOption[] = [
   { value: 'Groceries', label: '🛒 Groceries' },
