@@ -114,7 +114,7 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 4, p: 2 }}>
       <TextField
         fullWidth
         label="Title"
@@ -123,9 +123,10 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
         onChange={handleChange}
         required
         variant="outlined"
+        sx={{ mb: 1 }}
       />
 
-      <FormControl fullWidth required>
+      <FormControl fullWidth required sx={{ mb: 1 }}>
         <InputLabel>Category</InputLabel>
         <Select
           name="category"
@@ -150,6 +151,7 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
         required
         variant="outlined"
         placeholder="e.g. 123,45"
+        sx={{ mb: 1 }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -161,7 +163,7 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
         helperText={amountError}
       />
 
-      <FormControl fullWidth required>
+      <FormControl fullWidth required sx={{ mb: 1 }}>
         <InputLabel>Type</InputLabel>
         <Select
           name="type"
@@ -193,6 +195,7 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
         onChange={handleChange}
         required
         variant="outlined"
+        sx={{ mb: 2 }}
         InputLabelProps={{
           shrink: true,
         }}
@@ -204,8 +207,8 @@ function TransactionForm({ onAddTransaction }: TransactionFormProps) {
         size="large"
         fullWidth
         sx={{
-          mt: 2,
-          py: 1.5,
+          mt: 0.5,
+          py: 2,
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           fontSize: '1.1rem',
           fontWeight: 600,

@@ -141,8 +141,8 @@ export function FilterPopup({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <DialogContent sx={{ py: 0, px: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 3, pb: 1 }}>
           {/* Title Filter */}
           <Box sx={{ position: 'relative' }}>
             <TextField
